@@ -71,9 +71,10 @@ class Player extends SpriteGroupComponent<PlayerState>
       position.x = dashHorizontalCenter;
     }
     // Core gameplay: Add gravity
-
+    position += _velocity * dt;
     // Add a Player to the game: Calculate Dash's current position based on
     // her velocity over elapsed time since last update cycle
+
     super.update(dt);
   }
 
