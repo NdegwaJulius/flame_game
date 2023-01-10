@@ -63,7 +63,13 @@ class Player extends SpriteGroupComponent<PlayerState>
     final double dashHorizontalCenter = size.x / 2;
 
     // Add a Player to the game: Add infinite side boundaries logic
-
+    if (position.x < dashHorizontalCenter) {
+      // Add lines from here...
+      position.x = gameRef.size.x - (dashHorizontalCenter);
+    }
+    if (position.x > gameRef.size.x - (dashHorizontalCenter)) {
+      position.x = dashHorizontalCenter;
+    }
     // Core gameplay: Add gravity
 
     // Add a Player to the game: Calculate Dash's current position based on
