@@ -83,6 +83,18 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
 
     // Add a Player to the game: Add keypress logic
+    if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      moveLeft();
+    }
+
+    if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+      moveRight();
+    } // ... to here.
+
+    // During development, it's useful to "cheat"
+    if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+      // jump();
+    }
 
     return true;
   }
