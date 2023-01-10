@@ -97,18 +97,23 @@ class Player extends SpriteGroupComponent<PlayerState>
   void moveLeft() {
     _hAxisInput = 0;
 
-    // Powerups: Check is wearing hat (left)
-    current = PlayerState.left;
+    if (isWearingHat) {
+      current = PlayerState.nooglerLeft;
+    } else if (!hasPowerup) {
+      current = PlayerState.left;
+    }
 
     _hAxisInput += movingLeftInput;
   }
 
   void moveRight() {
-    _hAxisInput = 0;
+    _hAxisInput = 0; // by default not going left or right
 
-    // Powerups: Check is wearing hat (right)
-    current = PlayerState.right;
-
+    if (isWearingHat) {
+      current = PlayerState.nooglerRight;
+    } else if (!hasPowerup) {
+      current = PlayerState.right;
+    }
     _hAxisInput += movingRightInput;
   }
 
@@ -116,16 +121,26 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
   }
 
-  // Powerups: Add hasPowerup getter
+  bool get hasPowerup =>
+      current == PlayerState.rocket ||
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
-  // Powerups: Add isInvincible getter
+  bool get isInvincible => current == PlayerState.rocket;
 
-  // Powerups: Add isWearingHat getter
+  bool get isWearingHat =>
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    // Losing the game: Add collision logic for EnemyPlatform
+    if (other is EnemyPlatform && !isInvincible) {
+      gameRef.onLose();
+      return;
+    }
 
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
@@ -135,13 +150,31 @@ class Player extends SpriteGroupComponent<PlayerState>
       if (other is NormalPlatform) {
         jump();
         return;
+      } else if (other is SpringBoard) {
+        jump(specialJumpSpeed: jumpSpeed * 2);
+        return;
+      } else if (other is BrokenPlatform &&
+          other.current == BrokenPlatformState.cracked) {
+        jump();
+        other.breakPlatform();
+        return;
       }
-      // More on platforms: Check SpringBoard platform
-      // More on platforms: Check BrokenPlatform
     }
 
-    // Powerups: Collision logic for Rocket
-    // Powerups: Collision logic for NooglerHat
+    if (!hasPowerup && other is Rocket) {
+      current = PlayerState.rocket;
+      other.removeFromParent();
+      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+      return;
+    } else if (!hasPowerup && other is NooglerHat) {
+      if (current == PlayerState.center) current = PlayerState.nooglerCenter;
+      if (current == PlayerState.left) current = PlayerState.nooglerLeft;
+      if (current == PlayerState.right) current = PlayerState.nooglerRight;
+      other.removeFromParent();
+      _removePowerupAfterTime(other.activeLengthInMS);
+      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+      return;
+    }
   }
 
   void jump({double? specialJumpSpeed}) {
