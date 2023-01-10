@@ -48,32 +48,28 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // Core gameplay: Add circle hitbox to Dash
 
-    // Add a Player to the game: loadCharacterSprites
-    // Add a Player to the game: Default Dash onLoad to center state
+    await _loadCharacterSprites();
+    current = PlayerState.center;
   }
 
   @override
   void update(double dt) {
-    // Add a Player to the game: Add game state check
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
 
     _velocity.x = _hAxisInput * jumpSpeed;
-    // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
 
     final double dashHorizontalCenter = size.x / 2;
 
-    // Add a Player to the game: Add infinite side boundaries logic
     if (position.x < dashHorizontalCenter) {
-      // Add lines from here...
       position.x = gameRef.size.x - (dashHorizontalCenter);
     }
     if (position.x > gameRef.size.x - (dashHorizontalCenter)) {
       position.x = dashHorizontalCenter;
     }
+
     // Core gameplay: Add gravity
+
     position += _velocity * dt;
-    // Add a Player to the game: Calculate Dash's current position based on
-    // her velocity over elapsed time since last update cycle
 
     super.update(dt);
   }
@@ -82,16 +78,15 @@ class Player extends SpriteGroupComponent<PlayerState>
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     _hAxisInput = 0;
 
-    // Add a Player to the game: Add keypress logic
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
       moveLeft();
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
       moveRight();
-    } // ... to here.
+    }
 
-    // During development, it's useful to "cheat"
+    // During development, its useful to "cheat"
     if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
       // jump();
     }
@@ -102,8 +97,8 @@ class Player extends SpriteGroupComponent<PlayerState>
   void moveLeft() {
     _hAxisInput = 0;
 
-    // Add a Player to the game: Add logic for moving left
-    current = PlayerState.left; // Add this line
+    // Powerups: Check is wearing hat (left)
+    current = PlayerState.left;
 
     _hAxisInput += movingLeftInput;
   }
@@ -111,8 +106,8 @@ class Player extends SpriteGroupComponent<PlayerState>
   void moveRight() {
     _hAxisInput = 0;
 
-    // Add a Player to the game: Add logic for moving right
-    current = PlayerState.right; // Add this line
+    // Powerups: Check is wearing hat (right)
+    current = PlayerState.right;
 
     _hAxisInput += movingRightInput;
   }
