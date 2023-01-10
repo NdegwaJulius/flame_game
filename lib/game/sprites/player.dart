@@ -55,7 +55,9 @@ class Player extends SpriteGroupComponent<PlayerState>
   @override
   void update(double dt) {
     // Add a Player to the game: Add game state check
+    if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
 
+    _velocity.x = _hAxisInput * jumpSpeed;
     // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
 
     final double dashHorizontalCenter = size.x / 2;
